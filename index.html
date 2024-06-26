@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1932 Social</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .floating-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<!-- Hero Section -->
+<header class="bg-cover bg-center h-screen" style="background-image: url('hero.webp');">
+    <div class="flex items-center justify-center h-full bg-gray-900 bg-opacity-50">
+        <div class="text-center px-4">
+            <h1 class="text-5xl text-white font-bold">Welcome to 1932 Social</h1>
+            <p class="text-xl text-white mt-4">A premier restaurant and social club in Guntersville, Alabama</p>
+            <a href="#membership" class="mt-8 inline-block px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700">Join Us</a>
+        </div>
+    </div>
+</header>
+
+<!-- About Section -->
+<section class="py-12 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-center mb-8">About Us</h2>
+        <p class="text-lg text-center">1932 Social is a unique blend of fine dining and social networking. We offer a luxurious environment where our members can enjoy exquisite cuisine, engaging events, and a community of like-minded individuals.</p>
+    </div>
+</section>
+
+<!-- Membership Benefits Section -->
+<section id="membership" class="py-12 bg-gray-200">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-center mb-8">Membership Benefits</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-4">Exclusive Events</h3>
+                    <p>Access to members-only events, including wine tastings, cooking classes, and more.</p>
+                </div>
+            </div>
+            <div class="text-center">
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-4">Gourmet Dining</h3>
+                    <p>Experience our gourmet dining options curated by top chefs, available exclusively to members.</p>
+                </div>
+            </div>
+            <div class="text-center">
+                <div class="p-6 bg-white rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-4">Community</h3>
+                    <p>Join a community of like-minded individuals who share your passion for fine dining and socializing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Events Section -->
+<section class="py-12 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-center mb-8">Upcoming Events</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="p-6 bg-gray-100 rounded-lg shadow-md">
+                <h3 class="text-2xl font-semibold mb-4">Wine Tasting</h3>
+                <p class="mb-4">Join us for an exclusive wine tasting event on July 15th, 2024. Sample a selection of fine wines paired with gourmet appetizers.</p>
+                <a href="#" class="text-red-600 hover:underline">Learn More</a>
+            </div>
+            <div class="p-6 bg-gray-100 rounded-lg shadow-md">
+                <h3 class="text-2xl font-semibold mb-4">Cooking Class</h3>
+                <p class="mb-4">Attend our hands-on cooking class on August 20th, 2024, and learn to create delicious dishes with our head chef.</p>
+                <a href="#" class="text-red-600 hover:underline">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-8 bg-gray-800 text-gray-400" style="padding-bottom: 6rem;">
+    <div class="container mx-auto px-4 text-center">
+        <p>&copy; 2024 1932 Social. All rights reserved.</p>
+        <p>123 Main Street, Guntersville, AL 35976</p>
+        <p>Email: info@1932social.com | Phone: (123) 456-7890</p>
+    </div>
+</footer>
+
+<!-- Floating Navigation Bar -->
+<nav class="floating-nav">
+    <div class="flex justify-around py-4">
+        <a href="#" class="text-center">
+            <svg class="w-6 h-6 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M13 5v6h7m-9 2H4a1 1 0 00-1 1v6h16v-6a1 1 0 00-1-1h-7z"></path></svg>
+            <span class="text-sm text-gray-600">Home</span>
+        </a>
+        <a href="#login" class="text-center">
+            <svg class="w-6 h-6 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 12.879a3 3 0 000-4.242l4.95-4.95a3 3 0 014.242 0l4.95 4.95a3 3 0 000 4.242l-4.95 4.95a3 3 0 01-4.242 0l-4.95-4.95z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h.01"></path></svg>
+            <span class="text-sm text-gray-600">Login</span>
+        </a>
+        <a href="#chat" class="text-center">
+            <svg class="w-6 h-6 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 3.866-3.582 7-8 7a9.82 9.82 0 01-4-.84l-5.01 2.04a1 1 0 01-1.267-1.266l2.041-5.01A9.82 9.82 0 013 12c0-4.418 3.134-8 7-8s7 3.582 7 8z"></path></svg>
+            <span class="text-sm text-gray-600">Chat</span>
+        </a>
+    </div>
+</nav>
+
+</body>
+</html>
