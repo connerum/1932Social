@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Chat | 1932 Social</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .floating-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-message {
+            margin-bottom: 1rem;
+        }
+        .chat-message.user {
+            text-align: right;
+        }
+        .chat-message.user .message-content {
+            display: inline-block;
+            background-color: #4F46E5;
+            color: white;
+        }
+        .chat-message .profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .chat-message .profile img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 0.5rem;
+        }
+        main {
+            margin-bottom: 4rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<!-- Header -->
+<header class="bg-cover bg-center h-48" style="background-image: url('/imgs/chat-hero.webp');">
+    <div class="flex items-center justify-center h-full bg-gray-900 bg-opacity-50">
+        <div class="text-center px-4">
+            <h1 class="text-4xl text-white font-bold">1932 Social</h1>
+            <p class="text-xl text-white mt-2">Community Chat</p>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="py-12 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto bg-gray-100 p-8 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-8">Community Chat</h2>
+            <div class="chat-window bg-white p-4 rounded-lg shadow-inner h-96 overflow-y-scroll" id="chat-window">
+                <!-- Chat Messages -->
+            </div>
+            <form class="mt-6 flex" id="chat-form">
+                <input type="text" placeholder="Type your message..." class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <button type="submit" class="ml-4 px-6 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Send</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<%- include('_navbar') %>
+
+<script>
+    // User information passed from the server
+    const currentUser = <%- JSON.stringify(user) %>;
+
+    // Function to add a message to the chat window
+    function addMessageToChat(message) {
+        const chatWindow = document.getElementById('chat-window');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message');
+        if (message.userId === currentUser.id) {
+            messageElement.classList.add('user');
+        }
+        messageElement.innerHTML = `
+            <div class="profile">
+                <img src="/imgs/profile-placeholder.jpg" alt="Profile Picture">
+                <strong>${currentUser.name || 'Unknown'}</strong>
+            </div>
+            <div class="message-content bg-gray-200 p-4 rounded-lg inline-block max-w-sm">${message.content}</div>
+        `;
+        chatWindow.appendChild(messageElement);
+        chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the bottom
+    }
+
+    // Function to load initial messages
+    async function loadMessages() {
+        try {
+            const response = await fetch('/api/messages');
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            const messages = await response.json();
+            messages.forEach(addMessageToChat);
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        }
+    }
+
+    // Load initial messages
+    loadMessages();
+
+    // WebSocket connection
+    const socket = new WebSocket('ws://' + window.location.host + '/updates');
+
+    socket.onmessage = function (event) {
+        const message = JSON.parse(event.data);
+        addMessageToChat(message);
+    };
+
+    // Handle form submission
+    document.getElementById('chat-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const messageInput = document.querySelector('input');
+        const message = messageInput.value;
+
+        fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageInput.value = '';
+                } else {
+                    alert('Failed to send message: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+            });
+    });
+</script>
+
+</body>
+</html>
