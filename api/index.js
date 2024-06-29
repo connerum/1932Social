@@ -17,6 +17,7 @@ app.use(express.static('public'));
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
+app.set('views', 'views');  // Set the views directory
 
 // Use sessions to store user authentication state
 app.use(session({
