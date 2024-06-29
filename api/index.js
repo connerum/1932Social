@@ -14,7 +14,7 @@ global.EventSource = EventSource;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '../public')));  // Serve static files
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views'));
@@ -33,6 +33,7 @@ function checkAuth(req, res, next) {
     }
 }
 
+// Routes
 app.get('/', (req, res) => {
     res.render('index');
 });
