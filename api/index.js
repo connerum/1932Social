@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const PocketBase = require('pocketbase/cjs');
 const expressWs = require('express-ws');
-const EventSource = require('eventsource'); // Add this line
+const EventSource = require('eventsource');
 
 const app = express();
 expressWs(app);  // Initialize express-ws
@@ -13,7 +13,7 @@ global.EventSource = EventSource; // Polyfill EventSource
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static('public'));  // Serve static files
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -49,7 +49,6 @@ app.get('/chat', checkAuth, (req, res) => {
     res.render('chat', { user });
 });
 
-
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -79,18 +78,6 @@ app.post('/register', async (req, res) => {
     }
 });
 
-app.get('/api/messages', checkAuth, async (req, res) => {
-    try {
-        const messages = await pb.collection('1932Messages').getFullList({
-            sort: '-created'
-        });
-        res.json(messages);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-
 // WebSocket endpoint for real-time updates
 app.ws('/updates', (ws, req) => {
     console.log('Client connected');
@@ -105,6 +92,17 @@ app.ws('/updates', (ws, req) => {
     ws.on('close', () => {
         console.log('Client disconnected');
     });
+});
+
+app.get('/api/messages', checkAuth, async (req, res) => {
+    try {
+        const messages = await pb.collection('1932Messages').getFullList({
+            sort: '-created'
+        });
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.post('/chat', checkAuth, async (req, res) => {
