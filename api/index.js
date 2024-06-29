@@ -4,29 +4,27 @@ const session = require('express-session');
 const PocketBase = require('pocketbase/cjs');
 const expressWs = require('express-ws');
 const EventSource = require('eventsource');
+const path = require('path');
 
 const app = express();
-expressWs(app);  // Initialize express-ws
+expressWs(app);
 const pb = new PocketBase('https://db.conbackend.com');
 
-global.EventSource = EventSource; // Polyfill EventSource
+global.EventSource = EventSource;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static('public'));  // Serve static files
+app.use(express.static('public'));
 
-// Set the view engine to EJS
 app.set('view engine', 'ejs');
-app.set('views', 'views');  // Set the views directory
+app.set('views', path.join(__dirname, '../views'));
 
-// Use sessions to store user authentication state
 app.use(session({
     secret: 'your-secret-key',
     resave: false,
     saveUninitialized: false
 }));
 
-// Middleware to check authentication
 function checkAuth(req, res, next) {
     if (req.session && req.session.userId) {
         next();
@@ -35,7 +33,6 @@ function checkAuth(req, res, next) {
     }
 }
 
-// Routes
 app.get('/', (req, res) => {
     res.render('index');
 });
@@ -54,7 +51,7 @@ app.post('/login', async (req, res) => {
     try {
         const authData = await pb.collection('users').authWithPassword(email, password);
         req.session.userId = authData.record.id;
-        req.session.user = authData.record;  // Store the user information in the session
+        req.session.user = authData.record;
         res.redirect('/');
     } catch (err) {
         res.render('login', { error: 'Login failed: ' + err.message });
@@ -71,18 +68,15 @@ app.post('/register', async (req, res) => {
             password: password,
             passwordConfirm: password
         });
-        req.session.user = user;  // Store the user information in the session
+        req.session.user = user;
         res.redirect('/login');
     } catch (err) {
         res.render('login', { error: 'Registration failed: ' + err.message });
     }
 });
 
-// WebSocket endpoint for real-time updates
 app.ws('/updates', (ws, req) => {
     console.log('Client connected');
-
-    // Subscribe to the PocketBase collection for real-time updates
     pb.collection('1932Messages').subscribe('*', function (e) {
         if (e.action === 'create') {
             ws.send(JSON.stringify(e.record));
