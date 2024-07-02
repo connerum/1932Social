@@ -103,6 +103,7 @@
                 throw new Error('Network response was not ok ' + response.statusText);
             }
             const messages = await response.json();
+            messages.reverse();  // Reverse the order of messages
             messages.forEach(addMessageToChat);
         } catch (error) {
             console.error('Error fetching messages:', error);
