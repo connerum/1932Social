@@ -89,16 +89,65 @@ app.ws('/updates', (ws, req) => {
     });
 });
 
+const adminEmail = 'contact@brewsocial.club'; // Replace with actual admin email
+const adminPassword = 'PatchWork22!!';  // Replace with actual admin password
+
+async function adminLogin() {
+    const authData = await pb.admins.authWithPassword(adminEmail, adminPassword);
+    return authData.token;
+}
+
 app.get('/api/messages', checkAuth, async (req, res) => {
     try {
+        // Authenticate as admin
+        const adminToken = await adminLogin();
+        pb.authStore.save(adminToken);
+
         const messages = await pb.collection('1932Messages').getFullList({
             sort: '-created'
         });
-        res.json(messages);
+
+        // Create a set to store unique userIds
+        const uniqueUserIds = [...new Set(messages.map(message => message.userId))];
+
+        // Fetch all unique user details
+        const users = await Promise.all(uniqueUserIds.map(async userId => {
+            try {
+                const user = await pb.collection('users').getOne(userId);
+                return { userId, name: user.name || 'Unknown' };
+            } catch (err) {
+                console.error(`Error fetching user details for userId ${userId}:`, err.message);
+                return { userId, name: 'Unknown' };
+            }
+        }));
+
+        // Create a userId to name mapping
+        const userIdToNameMap = users.reduce((acc, user) => {
+            acc[user.userId] = user.name;
+            return acc;
+        }, {});
+
+        // Map messages to include full names
+        const messagesWithFullNames = messages.map(message => ({
+            ...message,
+            fullName: userIdToNameMap[message.userId] || 'Unknown'
+        }));
+
+        console.log(messagesWithFullNames);
+        res.json(messagesWithFullNames);
     } catch (err) {
+        console.error('Error fetching messages:', err.message);
         res.status(500).json({ error: err.message });
+    } finally {
+        pb.authStore.clear(); // Clear admin authentication
     }
 });
+
+
+
+
+
+
 
 app.post('/chat', checkAuth, async (req, res) => {
     const { message } = req.body;

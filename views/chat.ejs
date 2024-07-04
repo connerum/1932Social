@@ -20,6 +20,7 @@
         }
         .chat-message.user {
             text-align: right;
+            flex-direction: row-reverse;
         }
         .chat-message.user .message-content {
             display: inline-block;
@@ -31,11 +32,18 @@
             align-items: center;
             margin-bottom: 0.5rem;
         }
+        .chat-message.user .profile {
+            justify-content: flex-end;
+        }
         .chat-message .profile img {
             border-radius: 50%;
             width: 40px;
             height: 40px;
             margin-right: 0.5rem;
+        }
+        .chat-message.user .profile img {
+            margin-left: 0.5rem;
+            margin-right: 0;
         }
         main {
             margin-bottom: 4rem;
@@ -74,23 +82,23 @@
 
 <script>
     // User information passed from the server
-    const currentUser = <%- JSON.stringify(user) %>;
+    const currentUser = <%- JSON.stringify(user) %>; //fix
 
     // Function to add a message to the chat window
     function addMessageToChat(message) {
         const chatWindow = document.getElementById('chat-window');
         const messageElement = document.createElement('div');
         messageElement.classList.add('chat-message');
-        if (message.userId === currentUser.id) {
-            messageElement.classList.add('user');
-        }
+        messageElement.classList.add(message.userId === currentUser.id ? 'user' : 'other');
+
         messageElement.innerHTML = `
             <div class="profile">
-                <img src="/imgs/profile-placeholder.jpg" alt="Profile Picture">
-                <strong>${currentUser.name || 'Unknown'}</strong>
+                <img src="/imgs/profile-placeholder.png" alt="Profile Picture">
+                <strong>${message.userId === currentUser.id ? currentUser.name : message.fullName || 'Unknown'}</strong>
             </div>
             <div class="message-content bg-gray-200 p-4 rounded-lg inline-block max-w-sm">${message.content}</div>
         `;
+
         chatWindow.appendChild(messageElement);
         chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the bottom
     }
