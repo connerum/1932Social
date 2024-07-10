@@ -5,6 +5,8 @@ const PocketBase = require('pocketbase/cjs');
 const expressWs = require('express-ws');
 const EventSource = require('eventsource');
 const path = require('path');
+const favicon = require('serve-favicon');
+
 
 const app = express();
 expressWs(app);
@@ -12,6 +14,7 @@ const pb = new PocketBase('https://db.conbackend.com');
 
 global.EventSource = EventSource;
 
+app.use(favicon(path.join(__dirname, '../public/imgs/favicon', 'favicon.ico')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../public')));  // Serve static files
@@ -25,25 +28,47 @@ app.use(session({
     saveUninitialized: false
 }));
 
+// Middleware to check authentication
 function checkAuth(req, res, next) {
     if (req.session && req.session.userId) {
+        req.user = req.session.user;
         next();
     } else {
         res.redirect('/login');
     }
 }
 
+// Middleware to check if user is not authenticated
+function checkNotAuth(req, res, next) {
+    if (req.session && req.session.userId) {
+        res.redirect('/');
+    } else {
+        next();
+    }
+}
+
 // Routes
-app.get('/', (req, res) => {
-    res.render('index');
+app.get('/', async (req, res) => {
+    const user = req.session.user || null;
+    res.render('index', { user });
 });
 
-app.get('/login', (req, res) => {
-    res.render('login');
+app.get('/login', checkNotAuth, (req, res) => {
+    res.render('login', { user: null });
+});
+
+app.get('/reservation', checkAuth, (req, res) => {
+    const user = req.user;
+    res.render('reservation', { user });
+});
+
+app.get('/unlock', checkAuth, (req, res) => {
+    const user = req.user;
+    res.render('unlock', { user });
 });
 
 app.get('/chat', checkAuth, (req, res) => {
-    const user = req.session.user;
+    const user = req.user;
     res.render('chat', { user });
 });
 
@@ -75,6 +100,7 @@ app.post('/register', async (req, res) => {
         res.render('login', { error: 'Registration failed: ' + err.message });
     }
 });
+
 
 app.ws('/updates', (ws, req) => {
     console.log('Client connected');
