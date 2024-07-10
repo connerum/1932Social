@@ -144,11 +144,6 @@ app.get('/api/messages', checkAuth, async (req, res) => {
 });
 
 
-
-
-
-
-
 app.post('/chat', checkAuth, async (req, res) => {
     const { message } = req.body;
     try {
