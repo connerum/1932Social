@@ -7,7 +7,6 @@ const EventSource = require('eventsource');
 const path = require('path');
 const favicon = require('serve-favicon');
 
-
 const app = express();
 expressWs(app);
 const pb = new PocketBase('https://db.conbackend.com');
@@ -25,7 +24,8 @@ app.set('views', path.join(__dirname, '../views'));
 app.use(session({
     secret: 'your-secret-key',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: { maxAge: 60000 }  // Set cookie max age
 }));
 
 // Middleware to check authentication
@@ -80,7 +80,7 @@ app.post('/login', async (req, res) => {
         req.session.user = authData.record;
         res.redirect('/');
     } catch (err) {
-        res.render('login', { error: 'Login failed: ' + err.message });
+        res.render('login', { user: null, error: 'Login failed: ' + err.message });
     }
 });
 
@@ -97,10 +97,9 @@ app.post('/register', async (req, res) => {
         req.session.user = user;
         res.redirect('/login');
     } catch (err) {
-        res.render('login', { error: 'Registration failed: ' + err.message });
+        res.render('login', { user: null, error: 'Registration failed: ' + err.message });
     }
 });
-
 
 app.ws('/updates', (ws, req) => {
     console.log('Client connected');
@@ -168,7 +167,6 @@ app.get('/api/messages', checkAuth, async (req, res) => {
         pb.authStore.clear(); // Clear admin authentication
     }
 });
-
 
 app.post('/chat', checkAuth, async (req, res) => {
     const { message } = req.body;
